@@ -1,0 +1,29 @@
+WITH track_no AS (
+     SELECT i.customer_id,
+            COUNT(il.track_id) AS num_tracks
+     FROM invoice i
+     JOIN invoice_line il
+     ON i.invoice_id= il.invoice_id
+     GROUP BY i.customer_id),
+
+genre_no AS (
+     SELECT i.customer_id, 
+	        COUNT(DISTINCT t.genre_id) AS num_genres
+     FROM invoice i
+     JOIN invoice_line il
+     ON i.invoice_id= il.invoice_id
+     JOIN track t 
+     ON il.track_id = t.track_id
+     GROUP BY i.customer_id
+)
+
+SELECT c.customer_id,
+       c.first_name|| ' '||c.last_name AS name,
+	   tn.num_tracks,gn.num_genres
+FROM customer c
+JOIN track_no AS tn
+ON c.customer_id = tn.customer_id
+JOIN genre_no AS gn
+ON tn.customer_id = gn.customer_id
+ORDER BY num_tracks DESC
+LIMIT 10;

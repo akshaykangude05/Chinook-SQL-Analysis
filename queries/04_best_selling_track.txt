@@ -1,0 +1,7 @@
+SELECT t.name AS track_name,
+      COUNT(il.invoice_line_id) AS sold_count
+FROM invoice_line il
+JOIN track t ON il.track_id = t.track_id
+GROUP BY t.name
+ORDER BY sold_count DESC
+LIMIT 10;

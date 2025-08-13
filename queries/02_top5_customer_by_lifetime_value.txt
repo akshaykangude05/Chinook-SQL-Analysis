@@ -1,0 +1,17 @@
+WITH customer_totals AS (
+    SELECT customer_id, SUM(total) AS total_spent
+    FROM invoice
+    GROUP BY customer_id
+),
+top_customers AS (
+    SELECT customer_id, total_spent,
+        RANK() OVER (ORDER BY total_spent DESC) AS rnk
+    FROM customer_totals
+)
+SELECT 
+    c.first_name || ' ' || c.last_name AS customer_name,
+    t.total_spent
+FROM top_customers t
+JOIN customer c ON c.customer_id = t.customer_id
+WHERE t.rnk <= 5
+ORDER BY t.total_spent DESC;

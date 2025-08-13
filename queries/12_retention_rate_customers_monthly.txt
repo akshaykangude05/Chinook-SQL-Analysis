@@ -1,0 +1,27 @@
+WITH first_purchase AS (
+     SELECT customer_id, MIN(date_trunc('month',invoice_date)) AS first_month
+	 FROM invoice
+	 GROUP BY customer_id
+),
+monthly_customer AS (
+     SELECT DISTINCT customer_id,date_trunc('month',invoice_date) AS invoice_month
+	 FROM invoice
+),
+retention_calculation AS(
+     SELECT mc.invoice_month,
+	        COUNT(*)FILTER(WHERE mc.invoice_month = fp.first_month) AS new_customers,
+	        COUNT(*)FILTER(WHERE mc.invoice_month > fp.first_month) AS returning_customers,
+	        COUNT(*) AS total_customers
+	 FROM monthly_customer AS mc 
+	 JOIN first_purchase AS fp
+	 ON mc.customer_id=fp.customer_id
+	 GROUP BY mc.invoice_month
+)
+
+SELECT TO_CHAR(invoice_month, 'mon yyyy'),
+     new_customers,
+	 returning_customers,
+	 total_customers,
+     ROUND( (returning_customers::decimal/NULLIF(total_customers,0))*100 ,2)AS retention_rate
+ FROM retention_calculation
+ ORDER BY invoice_month

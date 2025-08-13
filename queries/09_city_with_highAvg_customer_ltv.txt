@@ -1,0 +1,12 @@
+WITH total_revenue AS (
+SELECT customer_id,SUM(total) AS total
+FROM invoice
+GROUP BY customer_id
+)
+SELECT c.city,ROUND(AVG(t.total),2) AS avg_revenue
+FROM customer c
+JOIN total_revenue t 
+ON c.customer_id = t.customer_id
+GROUP BY c.city
+ORDER BY avg_revenue DESC
+LIMIT 5

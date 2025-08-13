@@ -1,0 +1,11 @@
+WITH country_revenue AS (
+select c.country,
+SUM(i.total) AS total_revenue
+FROM customer c
+JOIN invoice i
+ON c.customer_id = i.customer_id
+GROUP BY c.country)
+
+SELECT country,total_revenue,RANK()OVER(ORDER BY total_revenue DESC) AS Rank
+FROM country_revenue
+ORDER BY Rank;

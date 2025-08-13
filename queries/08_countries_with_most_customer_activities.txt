@@ -1,0 +1,5 @@
+select billing_country AS country,COUNT(invoice_id) AS total_invoices
+FROM invoice
+GROUP BY country
+ORDER BY total_invoices DESC
+LIMIT 5;

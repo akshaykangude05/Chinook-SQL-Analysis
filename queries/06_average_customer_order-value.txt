@@ -1,0 +1,4 @@
+SELECT ROUND(AVG(t.total_value),2) AS avg_order_value
+FROM (select invoice_id, SUM(unit_price*quantity) AS total_value
+from invoice_line
+GROUP BY invoice_id) t

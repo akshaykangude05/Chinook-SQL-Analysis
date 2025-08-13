@@ -1,0 +1,17 @@
+WITH monthly_revenue AS (
+  SELECT 
+    DATE_TRUNC('month', invoice_date) AS month,
+    SUM(total) AS total_revenue
+  FROM invoice
+  GROUP BY month
+)
+SELECT 
+  TO_CHAR(month, 'Mon YYYY') AS month_label,
+  total_revenue,
+  total_revenue - LAG(total_revenue) OVER (ORDER BY month) AS revenue_change,
+  ROUND(
+    ((total_revenue - LAG(total_revenue) OVER (ORDER BY month)) / 
+     NULLIF(LAG(total_revenue) OVER (ORDER BY month), 0)) * 100, 2
+  ) AS percent_change
+FROM monthly_revenue
+ORDER BY month;
